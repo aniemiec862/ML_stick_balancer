@@ -104,7 +104,7 @@ class QLearner:
 
 
 def main():
-    for i in range(1):
+    for i in range(3):
         output_file = f"result_sarsa{i+1}.txt"
         learner = QLearner()
         learner.learn(10000, output_file)
