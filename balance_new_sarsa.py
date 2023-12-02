@@ -48,15 +48,17 @@ class QLearner:
 
     def attempt(self):
         observation = self.discretise(self.environment.reset()[0])
+        action = self.pick_action(observation)
         done = False
         reward_sum = 0.0
         while not done:
             self.environment.render()
-            action = self.pick_action(observation)
             new_observation, reward, done, _, info = self.environment.step(action)
             new_observation = self.discretise(new_observation)
-            self.update_knowledge(action, observation, new_observation, reward)
+            new_action = self.pick_action(observation)
+            self.update_knowledge(action, observation, new_action, new_observation, reward)
             observation = new_observation
+            action = new_action
             reward_sum += reward
         self.attempt_no += 1
         return reward_sum
@@ -84,24 +86,31 @@ class QLearner:
                 # If there are no Q values for the current observation, choose based on observation[2]
                 return 0 if observation[2] < self.num_buckets // 2 else 1
 
+            if (observation, 0) not in self.Q:
+                return 1
+            elif (observation, 1) not in self.Q:
+                return 0
+
             return 0 if self.Q.get((observation, 0), 0) > self.Q.get((observation, 1), 1) else 1
 
-    def update_knowledge(self, action, observation, new_observation, reward):
+    def update_knowledge(self, action, observation, new_action, new_observation, reward):
         # check if an action for this move already exists
         if (observation, action) not in self.Q:
             self.Q[(observation, action)] = 0.0
 
         current_value = self.Q[(observation, action)]
-        max_future_value = max(self.Q.get((new_observation, a), 0) for a in range(2))
-        new_value = (1 - self.learning_rate) * current_value + self.learning_rate * (reward + self.discount_factor * max_future_value)
-
+        future_value = self.Q.get((new_observation, new_action), 0)
+        new_value = (
+            (1 - self.learning_rate) * current_value +
+            self.learning_rate * (reward + self.discount_factor * future_value)
+        )
         # update the Q value for the current state and action
         self.Q[(observation, action)] = new_value
 
 
 def main():
     for i in range(3):
-        output_file = f"result{i}.txt"
+        output_file = f"result_sarsa{i+1}.txt"
         learner = QLearner()
         learner.learn(10000, output_file)
 
