@@ -48,9 +48,9 @@ def draw_standard_deviation(file_names, window_size):
     plt.show()
 
 
-window_size = 100
+window_size = 10
 
 draw_moving_average("result1.txt", window_size)
 
 file_names = ["result1.txt", "result2.txt", "result3.txt"]
-draw_standard_deviation(file_names, window_size)
+# draw_standard_deviation(file_names, window_size)

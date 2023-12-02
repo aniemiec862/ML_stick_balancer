@@ -82,14 +82,9 @@ class QLearner:
             return self.environment.action_space.sample()
         else:
             # 0 - go left, 1 - go right
-            if (observation, 0) not in self.Q and (observation, 1) not in self.Q:
+            if (observation, 0) not in self.Q or (observation, 1) not in self.Q:
                 # If there are no Q values for the current observation, choose based on observation[2]
                 return 0 if observation[2] < self.num_buckets // 2 else 1
-
-            if (observation, 0) not in self.Q:
-                return 1
-            elif (observation, 1) not in self.Q:
-                return 0
 
             return 0 if self.Q.get((observation, 0), 0) > self.Q.get((observation, 1), 1) else 1
 
@@ -109,7 +104,7 @@ class QLearner:
 
 
 def main():
-    for i in range(3):
+    for i in range(1):
         output_file = f"result_sarsa{i+1}.txt"
         learner = QLearner()
         learner.learn(10000, output_file)
