@@ -100,7 +100,7 @@ class QLearner:
 
 
 def main():
-    for i in range(1):
+    for i in range(3):
         output_file = f"result{i}.txt"
         learner = QLearner()
         learner.learn(5000, output_file)
