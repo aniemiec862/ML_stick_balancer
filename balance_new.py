@@ -32,7 +32,7 @@ class QLearner:
         ]
 
         self.Q = {}
-        self.epsilon = 1
+        self.experiment_rate = 1
         self.learning_rate = 1
         self.discount_factor = 0.99
 
@@ -40,7 +40,7 @@ class QLearner:
         with open(output_file, 'w') as file:
             for attempt_id in range(max_attempts):
                 reward_sum = self.attempt()
-                self.epsilon = max(0.01, np.exp(-0.001 * attempt_id))
+                self.experiment_rate = max(0.01, np.exp(-0.001 * attempt_id))
                 self.learning_rate = max(0.01, np.exp(-0.001 * attempt_id))
 
                 # print(reward_sum)
@@ -76,7 +76,7 @@ class QLearner:
         return parameters[0], parameters[1], parameters[2], parameters[3]
 
     def pick_action(self, observation):
-        if random.uniform(0, 1) < self.epsilon:
+        if random.uniform(0, 1) < self.experiment_rate:
             return self.environment.action_space.sample()
         else:
             # 0 - go left, 1 - go right
@@ -100,10 +100,10 @@ class QLearner:
 
 
 def main():
-    for i in range(3):
+    for i in range(1):
         output_file = f"result{i}.txt"
         learner = QLearner()
-        learner.learn(10000, output_file)
+        learner.learn(5000, output_file)
 
 
 if __name__ == '__main__':
